@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Q&A System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Job Q&A System</h1>
+        <input type="text" id="question" placeholder="Ask a job-related question..." />
+        <button onclick="askQuestion()">Search</button>
+        <div id="response"></div>
+        <div id="loader" style="display: none;">Loading...</div>
+    </div>
+
+    <script>
+        function askQuestion() {
+            let question = document.getElementById("question").value;
+
+            // Check if the question is empty
+            if (!question) {
+                alert("Please enter a question.");
+                return;
+            }
+
+            // Show the loader and hide the previous response
+            document.getElementById("loader").style.display = "block";
+            document.getElementById("response").innerText = "";  // Clear previous response
+
+            fetch("/ask", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question: question })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Hide the loader and show the response
+                document.getElementById("loader").style.display = "none";
+                document.getElementById("response").innerText = data.answer;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById("loader").style.display = "none";
+                document.getElementById("response").innerText = "An error occurred. Please try again.";
+            });
+        }
+    </script>
+</body>
+</html>
